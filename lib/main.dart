@@ -17,11 +17,22 @@ class TenterApp extends StatelessWidget {
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.ink,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.mint,
+        seedColor: AppColors.accent,
         brightness: Brightness.dark,
         surface: AppColors.panel,
+      ).copyWith(onSurface: AppColors.paper),
+      fontFamily: 'Barlow Semi Condensed',
+      textTheme: ThemeData.dark().textTheme.apply(
+        fontFamily: 'Barlow Semi Condensed',
+        bodyColor: AppColors.paper,
+        displayColor: AppColors.paper,
       ),
-      fontFamily: 'Roboto',
+      iconTheme: const IconThemeData(color: AppColors.paper),
+      dividerColor: AppColors.line,
+      sliderTheme: const SliderThemeData(
+        activeTrackColor: AppColors.accent,
+        thumbColor: AppColors.paper,
+      ),
     ),
     home: const CompanionHome(),
   );

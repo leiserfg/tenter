@@ -62,6 +62,17 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: Barlow Semi Condensed
+      fonts:
+        - asset: assets/fonts/BarlowSemiCondensed-Medium.ttf
+          weight: 400
+        - asset: assets/fonts/BarlowSemiCondensed-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/BarlowSemiCondensed-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/BarlowSemiCondensed-Bold.ttf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   # assets:

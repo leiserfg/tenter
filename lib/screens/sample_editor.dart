@@ -303,7 +303,7 @@ class _SampleEditorState extends State<SampleEditor> {
                     value: complete
                         ? (snapshot.hasError ? null : 1)
                         : service.progress,
-                    color: AppColors.mint,
+                    color: AppColors.accent,
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -386,7 +386,10 @@ class _SampleEditorState extends State<SampleEditor> {
                 hintText: 'Sample name',
                 suffixIcon: IconButton(
                   onPressed: _saveName,
-                  icon: const Icon(Icons.check_rounded, color: AppColors.mint),
+                  icon: const Icon(
+                    Icons.check_rounded,
+                    color: AppColors.accent,
+                  ),
                 ),
               ),
             ),
@@ -406,7 +409,7 @@ class _SampleEditorState extends State<SampleEditor> {
               value: _playhead.clamp(0.0, 1.0),
               onChanged: (value) => setState(() => _playhead = value),
               onChangeEnd: (value) => _seek(value),
-              activeColor: AppColors.mint,
+              activeColor: AppColors.accent,
               inactiveColor: AppColors.line,
             ),
             Row(
@@ -429,7 +432,7 @@ class _SampleEditorState extends State<SampleEditor> {
                   child: FilledButton.icon(
                     onPressed: _playing ? _pause : _playAll,
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.mint,
+                      backgroundColor: AppColors.accent,
                       foregroundColor: AppColors.ink,
                       padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
@@ -443,7 +446,7 @@ class _SampleEditorState extends State<SampleEditor> {
                 OutlinedButton.icon(
                   onPressed: _addChunk,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.mint,
+                    foregroundColor: AppColors.accent,
                     side: const BorderSide(color: AppColors.line),
                     padding: const EdgeInsets.symmetric(
                       vertical: 13,
@@ -459,7 +462,7 @@ class _SampleEditorState extends State<SampleEditor> {
               const SizedBox(height: 8),
               Text(
                 _playbackError!,
-                style: const TextStyle(color: Color(0xFFFF8F7F), fontSize: 11),
+                style: const TextStyle(color: AppColors.record, fontSize: 11),
               ),
             ],
             const SizedBox(height: 20),
@@ -521,8 +524,8 @@ class _SampleEditorState extends State<SampleEditor> {
                   padding: const EdgeInsets.only(bottom: 7),
                   child: Material(
                     color: item.id == _activeChunkId
-                        ? const Color(0xFF29332A)
-                        : const Color(0xFF202624),
+                        ? AppColors.panelRaised
+                        : AppColors.panel,
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
@@ -558,7 +561,7 @@ class _SampleEditorState extends State<SampleEditor> {
                             ),
                             Checkbox(
                               value: _selectedChunkIds.contains(item.id),
-                              activeColor: AppColors.mint,
+                              activeColor: AppColors.accent,
                               onChanged: (selected) => setState(() {
                                 if (selected == true) {
                                   _selectedChunkIds.add(item.id);
@@ -572,7 +575,7 @@ class _SampleEditorState extends State<SampleEditor> {
                               onPressed: () => _playChunk(item),
                               icon: const Icon(
                                 Icons.play_circle_outline_rounded,
-                                color: AppColors.mint,
+                                color: AppColors.accent,
                               ),
                             ),
                           ],
@@ -592,7 +595,7 @@ class _SampleEditorState extends State<SampleEditor> {
                       ? null
                       : _sendSelectedChunks,
                   style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.mint,
+                    backgroundColor: AppColors.accent,
                     foregroundColor: AppColors.ink,
                     padding: const EdgeInsets.symmetric(vertical: 13),
                   ),
@@ -614,7 +617,7 @@ class _SampleEditorState extends State<SampleEditor> {
               Container(
                 padding: const EdgeInsets.fromLTRB(13, 12, 13, 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF202624),
+                  color: AppColors.panel,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppColors.line),
                 ),
@@ -663,7 +666,7 @@ class _SampleEditorState extends State<SampleEditor> {
                           icon: const Icon(
                             Icons.delete_outline_rounded,
                             size: 18,
-                            color: Color(0xFFFF8F7F),
+                            color: AppColors.record,
                           ),
                         ),
                       ],
@@ -676,7 +679,7 @@ class _SampleEditorState extends State<SampleEditor> {
                       min: 0,
                       max: 1,
                       divisions: 200,
-                      activeColor: AppColors.mint,
+                      activeColor: AppColors.accent,
                       inactiveColor: AppColors.line,
                       onChanged: (range) {
                         if (range.end - range.start < .005) return;
@@ -693,7 +696,7 @@ class _SampleEditorState extends State<SampleEditor> {
                         Text(
                           'IN  ${formatPreciseDuration((duration * chunk.start).round())}',
                           style: const TextStyle(
-                            color: AppColors.mint,
+                            color: AppColors.accent,
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                           ),
@@ -701,7 +704,7 @@ class _SampleEditorState extends State<SampleEditor> {
                         Text(
                           'OUT  ${formatPreciseDuration((duration * chunk.end).round())}',
                           style: const TextStyle(
-                            color: AppColors.mint,
+                            color: AppColors.accent,
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                           ),
@@ -720,7 +723,7 @@ class _SampleEditorState extends State<SampleEditor> {
                             ),
                             label: const Text('SET IN AT PLAYHEAD'),
                             style: TextButton.styleFrom(
-                              foregroundColor: Colors.white70,
+                              foregroundColor: AppColors.muted,
                               textStyle: const TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w700,
@@ -734,7 +737,7 @@ class _SampleEditorState extends State<SampleEditor> {
                             icon: const Icon(Icons.last_page_rounded, size: 17),
                             label: const Text('SET OUT AT PLAYHEAD'),
                             style: TextButton.styleFrom(
-                              foregroundColor: Colors.white70,
+                              foregroundColor: AppColors.muted,
                               textStyle: const TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w700,
@@ -760,9 +763,7 @@ class _SampleEditorState extends State<SampleEditor> {
                 onPressed: widget.onDelete,
                 icon: const Icon(Icons.delete_outline_rounded, size: 18),
                 label: const Text('Delete recording'),
-                style: TextButton.styleFrom(
-                  foregroundColor: const Color(0xFFFF8F7F),
-                ),
+                style: TextButton.styleFrom(foregroundColor: AppColors.record),
               ),
             ),
           ],

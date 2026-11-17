@@ -144,12 +144,12 @@ class _RecordingSheetState extends State<RecordingSheet> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: _recording
-                  ? const Color(0xFF472B28)
-                  : AppColors.mint.withValues(alpha: .1),
+                  ? AppColors.panelRaised
+                  : AppColors.accent.withValues(alpha: .1),
               border: Border.all(
                 color: _recording
-                    ? const Color(0xFFDA7666)
-                    : AppColors.mint.withValues(alpha: .35),
+                    ? AppColors.accent
+                    : AppColors.accent.withValues(alpha: .35),
                 width: 1.5,
               ),
             ),
@@ -166,7 +166,7 @@ class _RecordingSheetState extends State<RecordingSheet> {
                   : const Icon(
                       Icons.mic_none_rounded,
                       size: 42,
-                      color: AppColors.mint,
+                      color: AppColors.accent,
                     ),
             ),
           ),
@@ -175,7 +175,7 @@ class _RecordingSheetState extends State<RecordingSheet> {
             Text(
               _error!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Color(0xFFFF8F7F), fontSize: 12),
+              style: const TextStyle(color: AppColors.record, fontSize: 12),
             ),
           ],
           const SizedBox(height: 26),
@@ -184,8 +184,8 @@ class _RecordingSheetState extends State<RecordingSheet> {
             child: FilledButton.icon(
               style: FilledButton.styleFrom(
                 backgroundColor: _recording
-                    ? const Color(0xFFDA7666)
-                    : AppColors.mint,
+                    ? AppColors.accent
+                    : AppColors.accent,
                 foregroundColor: AppColors.ink,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),

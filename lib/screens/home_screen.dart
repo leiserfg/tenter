@@ -98,8 +98,8 @@ class _CompanionHomeState extends State<CompanionHome> {
         ),
       ),
       bottomNavigationBar: NavigationBar(
-        backgroundColor: const Color(0xFF171B1A),
-        indicatorColor: AppColors.mint.withValues(alpha: .13),
+        backgroundColor: AppColors.ink,
+        indicatorColor: AppColors.accent.withValues(alpha: .13),
         selectedIndex: _tab,
         onDestinationSelected: (index) => setState(() => _tab = index),
         destinations: const [
@@ -117,7 +117,7 @@ class _CompanionHomeState extends State<CompanionHome> {
       floatingActionButton: _tab == 0
           ? FloatingActionButton.extended(
               onPressed: _record,
-              backgroundColor: AppColors.mint,
+              backgroundColor: AppColors.accent,
               foregroundColor: AppColors.ink,
               icon: const Icon(Icons.fiber_manual_record_rounded, size: 18),
               label: const Text(
@@ -131,7 +131,9 @@ class _CompanionHomeState extends State<CompanionHome> {
 
   Widget _samplesPage() {
     return _loading
-        ? const Center(child: CircularProgressIndicator(color: AppColors.mint))
+        ? const Center(
+            child: CircularProgressIndicator(color: AppColors.accent),
+          )
         : ListView(
             padding: const EdgeInsets.fromLTRB(20, 10, 20, 110),
             children: [
@@ -200,13 +202,19 @@ class _TopBar extends StatelessWidget {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: AppColors.mint,
-              borderRadius: BorderRadius.circular(9),
+              color: AppColors.trackOne,
+              borderRadius: BorderRadius.circular(18),
             ),
-            child: const Icon(
-              Icons.all_inclusive_rounded,
-              color: AppColors.ink,
-              size: 22,
+            child: const Center(
+              child: Text(
+                'T8',
+                style: TextStyle(
+                  color: AppColors.ink,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -.5,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 11),
@@ -234,9 +242,7 @@ class _TopBar extends StatelessWidget {
                     Icon(
                       Icons.circle,
                       size: 7,
-                      color: connected
-                          ? AppColors.mint
-                          : const Color(0xFFF0B56A),
+                      color: connected ? AppColors.accent : AppColors.trackOne,
                     ),
                     const SizedBox(width: 6),
                     Text(
@@ -244,7 +250,7 @@ class _TopBar extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 9,
                         letterSpacing: 1.1,
-                        color: connected ? AppColors.mint : AppColors.muted,
+                        color: connected ? AppColors.accent : AppColors.muted,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -287,12 +293,12 @@ class _EmptyLibrary extends StatelessWidget {
         const SizedBox(height: 16),
         const Row(
           children: [
-            Icon(Icons.lock_outline_rounded, size: 14, color: AppColors.mint),
+            Icon(Icons.lock_outline_rounded, size: 14, color: AppColors.accent),
             SizedBox(width: 6),
             Text(
               'PRIVATE BY DEFAULT',
               style: TextStyle(
-                color: AppColors.mint,
+                color: AppColors.accent,
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.2,
@@ -327,12 +333,12 @@ class _SampleCard extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: AppColors.mint.withValues(alpha: .12),
+                    color: AppColors.accent.withValues(alpha: .12),
                     borderRadius: BorderRadius.circular(11),
                   ),
                   child: const Icon(
                     Icons.graphic_eq_rounded,
-                    color: AppColors.mint,
+                    color: AppColors.accent,
                   ),
                 ),
                 const SizedBox(width: 11),
@@ -363,7 +369,7 @@ class _SampleCard extends StatelessWidget {
                 Text(
                   '${sample.chunks.length} CHUNK${sample.chunks.length == 1 ? '' : 'S'}',
                   style: const TextStyle(
-                    color: AppColors.mint,
+                    color: AppColors.accent,
                     fontWeight: FontWeight.w800,
                     fontSize: 9,
                     letterSpacing: .7,

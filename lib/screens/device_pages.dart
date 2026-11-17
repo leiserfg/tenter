@@ -54,16 +54,16 @@ class LoomPage extends StatelessWidget {
                         decoration: BoxDecoration(
                           color:
                               (connected
-                                      ? AppColors.mint
-                                      : const Color(0xFFF0B56A))
+                                      ? AppColors.accent
+                                      : AppColors.trackOne)
                                   .withValues(alpha: .12),
                           borderRadius: BorderRadius.circular(13),
                         ),
                         child: Icon(
                           connected ? Icons.cable_rounded : Icons.usb_rounded,
                           color: connected
-                              ? AppColors.mint
-                              : const Color(0xFFF0B56A),
+                              ? AppColors.accent
+                              : AppColors.trackOne,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -97,9 +97,7 @@ class LoomPage extends StatelessWidget {
                       ),
                       Icon(
                         Icons.circle,
-                        color: connected
-                            ? AppColors.mint
-                            : const Color(0xFF59615D),
+                        color: connected ? AppColors.accent : AppColors.line,
                         size: 10,
                       ),
                     ],
@@ -134,10 +132,10 @@ class LoomPage extends StatelessWidget {
                             },
                       style: FilledButton.styleFrom(
                         backgroundColor: connected
-                            ? const Color(0xFF343B37)
-                            : AppColors.mint,
+                            ? AppColors.panelRaised
+                            : AppColors.accent,
                         foregroundColor: connected
-                            ? Colors.white
+                            ? AppColors.paper
                             : AppColors.ink,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
@@ -168,7 +166,7 @@ class LoomPage extends StatelessWidget {
                         icon: const Icon(Icons.graphic_eq_rounded, size: 18),
                         label: const Text('CHOOSE CHUNKS TO SEND'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.mint,
+                          foregroundColor: AppColors.accent,
                           side: const BorderSide(color: AppColors.line),
                           padding: const EdgeInsets.symmetric(vertical: 13),
                         ),
@@ -179,7 +177,7 @@ class LoomPage extends StatelessWidget {
                     const SizedBox(height: 18),
                     LinearProgressIndicator(
                       value: loom.progress == 0 ? null : loom.progress,
-                      color: AppColors.mint,
+                      color: AppColors.accent,
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -194,7 +192,7 @@ class LoomPage extends StatelessWidget {
                     Text(
                       loom.lastError!,
                       style: const TextStyle(
-                        color: Color(0xFFFF8F7F),
+                        color: AppColors.record,
                         fontSize: 11,
                         height: 1.4,
                       ),
@@ -257,8 +255,8 @@ class _DeviceSampleTile extends StatelessWidget {
           height: 34,
           decoration: BoxDecoration(
             color: sample.isFactory
-                ? const Color(0xFFF0B56A).withValues(alpha: .12)
-                : AppColors.mint.withValues(alpha: .12),
+                ? AppColors.trackOne.withValues(alpha: .12)
+                : AppColors.accent.withValues(alpha: .12),
             borderRadius: BorderRadius.circular(9),
           ),
           child: Icon(
@@ -266,7 +264,7 @@ class _DeviceSampleTile extends StatelessWidget {
                 ? Icons.inventory_2_outlined
                 : Icons.graphic_eq_rounded,
             size: 18,
-            color: sample.isFactory ? const Color(0xFFF0B56A) : AppColors.mint,
+            color: sample.isFactory ? AppColors.trackOne : AppColors.accent,
           ),
         ),
         const SizedBox(width: 10),
@@ -302,7 +300,7 @@ class _DeviceSampleTile extends StatelessWidget {
             visualDensity: VisualDensity.compact,
             icon: const Icon(
               Icons.delete_outline_rounded,
-              color: Color(0xFFFF8F7F),
+              color: AppColors.record,
               size: 19,
             ),
           ),
@@ -334,7 +332,7 @@ Future<void> _confirmRemoveSample(
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
           style: FilledButton.styleFrom(
-            backgroundColor: const Color(0xFFFF8F7F),
+            backgroundColor: AppColors.record,
             foregroundColor: AppColors.ink,
           ),
           child: const Text('REMOVE'),
@@ -444,7 +442,7 @@ class _BackupPageState extends State<BackupPage> {
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFFFF8F7F),
+                backgroundColor: AppColors.record,
                 foregroundColor: AppColors.ink,
               ),
               child: const Text('RESTORE'),
@@ -494,7 +492,7 @@ class _BackupPageState extends State<BackupPage> {
                         value: complete
                             ? (failure == null ? 1 : null)
                             : (loom.progress == 0 ? null : loom.progress),
-                        color: AppColors.mint,
+                        color: AppColors.accent,
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -577,7 +575,7 @@ class _BackupPageState extends State<BackupPage> {
                   children: [
                     const Icon(
                       Icons.usb_rounded,
-                      color: AppColors.mint,
+                      color: AppColors.accent,
                       size: 20,
                     ),
                     const SizedBox(width: 9),
@@ -601,7 +599,7 @@ class _BackupPageState extends State<BackupPage> {
                         ? null
                         : _saveBackup,
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.mint,
+                      backgroundColor: AppColors.accent,
                       foregroundColor: AppColors.ink,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
@@ -624,7 +622,7 @@ class _BackupPageState extends State<BackupPage> {
                         ? null
                         : _restoreBackup,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.mint,
+                      foregroundColor: AppColors.accent,
                       side: const BorderSide(color: AppColors.line),
                       padding: const EdgeInsets.symmetric(vertical: 13),
                     ),
@@ -642,7 +640,7 @@ class _BackupPageState extends State<BackupPage> {
                   const SizedBox(height: 15),
                   LinearProgressIndicator(
                     value: loom.progress == 0 ? null : loom.progress,
-                    color: AppColors.mint,
+                    color: AppColors.accent,
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -657,7 +655,7 @@ class _BackupPageState extends State<BackupPage> {
                   Text(
                     loom.lastError!,
                     style: const TextStyle(
-                      color: Color(0xFFFF8F7F),
+                      color: AppColors.record,
                       fontSize: 11,
                       height: 1.4,
                     ),

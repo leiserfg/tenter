@@ -85,8 +85,8 @@ class _WavePainter extends CustomPainter {
     final paint = Paint()..strokeCap = StrokeCap.round;
     for (final chunk in chunks) {
       paint.color = chunk.id == selectedChunkId
-          ? AppColors.mint.withValues(alpha: .13)
-          : const Color(0xFFF0B56A).withValues(alpha: .08);
+          ? AppColors.accent.withValues(alpha: .13)
+          : AppColors.trackOne.withValues(alpha: .08);
       canvas.drawRect(
         Rect.fromLTRB(
           chunk.start.clamp(0, 1) * size.width,
@@ -106,7 +106,7 @@ class _WavePainter extends CustomPainter {
         ..strokeWidth = 1;
       canvas.drawLine(Offset(0, center), Offset(size.width, center), paint);
     } else {
-      paint.color = AppColors.mint.withValues(alpha: .82);
+      paint.color = AppColors.accent.withValues(alpha: .82);
       paint.strokeWidth = (size.width / waveform.length * .72).clamp(1.0, 4.0);
       for (var i = 0; i < waveform.length; i++) {
         final point = waveform[i];
@@ -126,7 +126,7 @@ class _WavePainter extends CustomPainter {
     }
 
     paint
-      ..color = const Color(0xFFF0B56A)
+      ..color = AppColors.trackOne
       ..strokeWidth = 1.4;
     for (final chunk in chunks) {
       for (final boundary in [chunk.start, chunk.end]) {
@@ -136,7 +136,7 @@ class _WavePainter extends CustomPainter {
     }
     if (playhead != null) {
       paint
-        ..color = Colors.white
+        ..color = AppColors.paper
         ..strokeWidth = 1.5;
       final x = playhead!.clamp(0, 1) * size.width;
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);

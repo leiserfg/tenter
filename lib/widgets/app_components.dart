@@ -9,7 +9,7 @@ class SectionEyebrow extends StatelessWidget {
   Widget build(BuildContext context) => Text(
     text,
     style: const TextStyle(
-      color: AppColors.mint,
+      color: AppColors.accent,
       fontSize: 10,
       fontWeight: FontWeight.w800,
       letterSpacing: 1.7,
@@ -33,7 +33,7 @@ class FeatureRow extends StatelessWidget {
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 19, color: AppColors.mint),
+        Icon(icon, size: 19, color: AppColors.accent),
         const SizedBox(width: 11),
         Expanded(
           child: Column(
@@ -79,7 +79,7 @@ class MutedAction extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
     decoration: BoxDecoration(
-      color: enabled ? AppColors.mint : const Color(0xFF242A28),
+      color: enabled ? AppColors.accent : AppColors.panelRaised,
       borderRadius: BorderRadius.circular(13),
     ),
     child: Row(
@@ -93,7 +93,7 @@ class MutedAction extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  color: enabled ? AppColors.ink : Colors.white70,
+                  color: enabled ? AppColors.ink : AppColors.muted,
                   fontSize: 11,
                   fontWeight: FontWeight.w900,
                   letterSpacing: .7,
@@ -126,20 +126,20 @@ class InfoStrip extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(13),
     decoration: BoxDecoration(
-      color: const Color(0xFF202622),
+      color: AppColors.panel,
       borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: const Color(0xFF333D35)),
+      border: Border.all(color: AppColors.line),
     ),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: AppColors.mint, size: 16),
+        Icon(icon, color: AppColors.accent, size: 16),
         const SizedBox(width: 9),
         Expanded(
           child: Text(
             text,
             style: const TextStyle(
-              color: Colors.white70,
+              color: AppColors.muted,
               fontSize: 11,
               height: 1.45,
             ),
