@@ -8,7 +8,8 @@
 {
   android = {
     enable = true;
-    platforms.version = [ "34" ];
+    platforms.version = [ "34" "35" "36" ];
+    buildTools.version = [ "36.0.0" "35.0.0" "33.0.2" "30.0.3" ];
     systemImageTypes = [ ];
     abis = [ "arm64-v8a" ];
 

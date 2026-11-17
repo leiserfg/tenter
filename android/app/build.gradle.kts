@@ -7,8 +7,8 @@ plugins {
 android {
     namespace = "com.leiserfg.tenter"
     // Match the Android platform and build-tools versions provided by devenv.
-    compileSdk = 34
-    buildToolsVersion = "35.0.0"
+    compileSdk = 36
+    buildToolsVersion = "36.0.0"
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
