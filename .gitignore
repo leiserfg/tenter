@@ -8,3 +8,14 @@ devenv.local.yaml
 
 # pre-commit
 .pre-commit-config.yaml
+
+# Flutter / Dart generated files
+/.dart_tool/
+/build/
+/.flutter-plugins
+/.flutter-plugins-dependencies
+/android/.gradle/
+/android/local.properties
+/.android/
+/.idea/
+*.iml
