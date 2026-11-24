@@ -36,15 +36,19 @@ class LoomMidiService extends ChangeNotifier {
   double _progress = 0;
   int? _sampleCount;
   List<LoomBankSampleInfo> _samples = const [];
+  bool _samplesLoaded = false;
+  bool _loadingSamples = false;
   String? _lastError;
 
   bool get connected => _device?.connected ?? false;
   bool get connecting => _connecting;
-  bool get transferring => _transferring;
+  bool get transferring => _transferring || _loadingSamples;
   String get status => _status;
   String? get deviceName => _device?.name;
   int? get sampleCount => _sampleCount;
   List<LoomBankSampleInfo> get samples => List.unmodifiable(_samples);
+  bool get samplesLoaded => _samplesLoaded;
+  bool get loadingSamples => _loadingSamples;
   double get progress => _progress;
   String? get lastError => _lastError;
 
@@ -88,18 +92,10 @@ class LoomMidiService extends ChangeNotifier {
           if (ping.isEmpty || ping.first != 0) {
             throw StateError('The MIDI device did not answer the LOOM-8 ping.');
           }
-          _status = 'Connected · reading sample bank…';
-          notifyListeners();
-          final bank = await _readBank((fraction) {
-            _progress = fraction;
-            notifyListeners();
-          });
-          _samples = bank == null
-              ? const []
-              : LoomSampleBankBuilder.inspectBank(bank);
-          _sampleCount = _samples.length;
-          _progress = 0;
-          _status = 'Connected · ${_sampleCount!} sample-bank entries';
+          _samples = const [];
+          _sampleCount = null;
+          _samplesLoaded = false;
+          _status = 'Connected · sample bank not read';
           notifyListeners();
           return;
         } catch (error) {
@@ -131,11 +127,24 @@ class LoomMidiService extends ChangeNotifier {
     super.dispose();
   }
 
+  void sendTransportStart() => _sendRealtime(0xfa);
+
+  void sendTransportStop() => _sendRealtime(0xfc);
+
+  void _sendRealtime(int status) {
+    final device = _device;
+    if (device == null || !device.connected) {
+      throw StateError('The FM-1 MIDI connection was lost.');
+    }
+    _midi.sendData(Uint8List.fromList([status]), deviceId: device.id);
+  }
+
   void disconnect() {
     final device = _device;
     _device = null;
     _sampleCount = null;
     _samples = const [];
+    _samplesLoaded = false;
     if (device != null) {
       _midi.disconnectDevice(device);
     }
@@ -145,12 +154,51 @@ class LoomMidiService extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> refreshSamples({bool force = false}) async {
+    if (!connected) {
+      throw StateError('Connect to LOOM-8 before reading samples.');
+    }
+    if (_transferring || _loadingSamples) {
+      return;
+    }
+    if (_samplesLoaded && !force) {
+      return;
+    }
+
+    _loadingSamples = true;
+    _lastError = null;
+    _progress = 0;
+    _status = 'Reading the FM-1 sample bank…';
+    notifyListeners();
+    try {
+      final bank = await _readBank((fraction) {
+        _progress = fraction;
+        notifyListeners();
+      });
+      _samples = bank == null
+          ? const []
+          : LoomSampleBankBuilder.inspectBank(bank);
+      _sampleCount = _samples.length;
+      _samplesLoaded = true;
+      _progress = 1;
+      _status = 'Read ${_samples.length} sample-bank entries.';
+      notifyListeners();
+    } catch (error) {
+      _lastError = error.toString().replaceFirst('Bad state: ', '');
+      _status = 'Could not read sample bank · $_lastError';
+      rethrow;
+    } finally {
+      _loadingSamples = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> sendChunks(Sample sample, List<SampleChunk> chunks) async {
     if (!connected) {
       throw StateError('Connect to LOOM-8 before sending chunks.');
     }
-    if (_transferring) {
-      throw StateError('A sample-bank transfer is already running.');
+    if (_transferring || _loadingSamples) {
+      throw StateError('A LOOM-8 data transfer is already running.');
     }
     if (chunks.isEmpty) {
       throw StateError('Select at least one chunk to send.');
@@ -198,8 +246,8 @@ class LoomMidiService extends ChangeNotifier {
     if (!connected) {
       throw StateError('Connect to LOOM-8 before removing samples.');
     }
-    if (_transferring) {
-      throw StateError('A sample-bank transfer is already running.');
+    if (_transferring || _loadingSamples) {
+      throw StateError('A LOOM-8 data transfer is already running.');
     }
 
     _transferring = true;
@@ -251,7 +299,7 @@ class LoomMidiService extends ChangeNotifier {
 
   Future<Uint8List> createBackup() async {
     if (!connected) throw StateError('Connect to LOOM-8 before backing up.');
-    if (_transferring) {
+    if (_transferring || _loadingSamples) {
       throw StateError('Another LOOM-8 transfer is already running.');
     }
 
@@ -321,6 +369,9 @@ class LoomMidiService extends ChangeNotifier {
                 notifyListeners();
               }) ??
               LoomSampleBankBuilder.emptyBank();
+          _samples = LoomSampleBankBuilder.inspectBank(bank);
+          _sampleCount = _samples.length;
+          _samplesLoaded = true;
           final file = LoomBackupCodec.withSampleBank(core, bank);
           final parsed = LoomBackupCodec.parseFile(file);
           _status = parsed.flags & 1 != 0
@@ -344,7 +395,7 @@ class LoomMidiService extends ChangeNotifier {
   Future<void> restoreBackup(Uint8List file) async {
     final backup = LoomBackupCodec.parseFile(file);
     if (!connected) throw StateError('Connect to LOOM-8 before restoring.');
-    if (_transferring) {
+    if (_transferring || _loadingSamples) {
       throw StateError('Another LOOM-8 transfer is already running.');
     }
 

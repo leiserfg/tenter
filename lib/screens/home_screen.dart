@@ -48,16 +48,25 @@ class _CompanionHomeState extends State<CompanionHome> {
       builder: (_) => const RecordingSheet(),
     );
     if (result == null || !mounted) return;
+    await _addCapture(result);
+  }
+
+  Future<void> _addCapture(
+    RecordedAudio capture, {
+    bool fromLoom = false,
+  }) async {
     final sample = Sample(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
-      name: 'New recording ${_samples.length + 1}',
-      path: result.path,
+      name: fromLoom
+          ? 'LOOM take ${_samples.length + 1}'
+          : 'New recording ${_samples.length + 1}',
+      path: capture.path,
       createdAt: DateTime.now(),
-      durationMs: result.durationMs,
+      durationMs: capture.durationMs,
     );
     setState(() => _samples.insert(0, sample));
     await SampleStore.save(_samples);
-    if (mounted) _openEditor(sample);
+    if (mounted) await _openEditor(sample);
   }
 
   Future<void> _openEditor(Sample sample) async {
@@ -85,7 +94,10 @@ class _CompanionHomeState extends State<CompanionHome> {
   Widget build(BuildContext context) {
     final pages = [
       _samplesPage(),
-      LoomPage(onOpenSamples: () => setState(() => _tab = 0)),
+      LoomPage(
+        onOpenSamples: () => setState(() => _tab = 0),
+        onCaptureSaved: (capture) => _addCapture(capture, fromLoom: true),
+      ),
       const BackupPage(),
     ];
     return Scaffold(

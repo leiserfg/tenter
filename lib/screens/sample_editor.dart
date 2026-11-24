@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -7,6 +8,7 @@ import '../models/sample.dart';
 import '../services/loom_midi_service.dart';
 import '../ui/app_theme.dart';
 import '../utils/formatters.dart';
+import '../services/wav_exporter.dart';
 import '../widgets/app_components.dart';
 import '../widgets/waveform.dart';
 
@@ -42,6 +44,8 @@ class _SampleEditorState extends State<SampleEditor> {
   bool _loaded = false;
   bool _playing = false;
   String? _playbackError;
+  bool _normalizeExport = true;
+  bool _exporting = false;
 
   int get _timelineDurationMs =>
       _player.duration?.inMilliseconds ?? widget.sample.durationMs;
@@ -132,6 +136,51 @@ class _SampleEditorState extends State<SampleEditor> {
       selection: TextSelection.collapsed(offset: name.length),
     );
     await widget.onChanged();
+  }
+
+  Future<void> _saveWav({SampleChunk? chunk}) async {
+    if (_exporting) return;
+    setState(() => _exporting = true);
+    try {
+      final wav = await WavExporter.cropToWav(
+        path: widget.sample.path,
+        start: chunk?.start ?? 0,
+        end: chunk?.end ?? 1,
+        normalize: _normalizeExport,
+      );
+      final baseName = (chunk?.name ?? widget.sample.name)
+          .toLowerCase()
+          .replaceAll(RegExp(r'[^a-z0-9._-]+'), '-')
+          .replaceAll(RegExp(r'^-+|-+$'), '');
+      final uri = await FilePicker.saveFile(
+        dialogTitle: 'Save WAV recording',
+        fileName: '${baseName.isEmpty ? 'loom-recording' : baseName}.wav',
+        mimeType: 'audio/wav',
+        bytes: wav,
+      );
+      if (!mounted) return;
+      if (uri == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('WAV export cancelled.')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Saved WAV: ${uri.pathSegments.isEmpty ? uri : uri.pathSegments.last}',
+            ),
+          ),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not export WAV: $error')));
+      }
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
   }
 
   Future<void> _saveChunkName(SampleChunk chunk, String value) async {
@@ -458,6 +507,28 @@ class _SampleEditorState extends State<SampleEditor> {
                 ),
               ],
             ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: _exporting ? null : () => _saveWav(),
+                icon: const Icon(Icons.save_alt_rounded, size: 17),
+                label: Text(_exporting ? 'PREPARING WAV…' : 'SAVE FULL WAV'),
+                style: TextButton.styleFrom(foregroundColor: AppColors.accent),
+              ),
+            ),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              value: _normalizeExport,
+              onChanged: _exporting
+                  ? null
+                  : (value) => setState(() => _normalizeExport = value),
+              activeThumbColor: AppColors.accent,
+              title: const Text('Normalize exported WAV'),
+              subtitle: const Text(
+                'Boosts a quiet file to a healthy peak; the recording stays unchanged.',
+                style: TextStyle(color: AppColors.muted, fontSize: 10),
+              ),
+            ),
             if (_playbackError != null) ...[
               const SizedBox(height: 8),
               Text(
@@ -711,6 +782,24 @@ class _SampleEditorState extends State<SampleEditor> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _exporting
+                            ? null
+                            : () => _saveWav(chunk: chunk),
+                        icon: const Icon(Icons.content_cut_rounded, size: 17),
+                        label: Text(
+                          'CROP & SAVE ${chunk.name.toUpperCase()} WAV',
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.accent,
+                          side: const BorderSide(color: AppColors.line),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -754,7 +843,7 @@ class _SampleEditorState extends State<SampleEditor> {
             const SizedBox(height: 16),
             const InfoStrip(
               icon: Icons.info_outline_rounded,
-              text: 'Chunk in/out ranges are saved and can be previewed. Sending them to LOOM-8 needs the USB transfer feature, which is not wired up yet.',
+              text: 'Chunk in/out ranges are saved. Export a full WAV or crop the selected range to a new WAV file; the source recording stays untouched.',
             ),
             const SizedBox(height: 10),
             Align(

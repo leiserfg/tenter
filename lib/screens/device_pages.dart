@@ -8,11 +8,30 @@ import '../services/loom_backup_codec.dart';
 import '../services/loom_sample_bank.dart';
 import '../ui/app_theme.dart';
 import '../widgets/app_components.dart';
+import 'loom_audio_recording_sheet.dart';
+import 'recording_sheet.dart';
 
 class LoomPage extends StatelessWidget {
-  const LoomPage({super.key, required this.onOpenSamples});
+  const LoomPage({
+    super.key,
+    required this.onOpenSamples,
+    required this.onCaptureSaved,
+  });
 
   final VoidCallback onOpenSamples;
+  final Future<void> Function(RecordedAudio capture) onCaptureSaved;
+
+  Future<void> _recordUsbOutput(BuildContext context) async {
+    final capture = await showModalBottomSheet<RecordedAudio>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.panel,
+      builder: (_) => const LoomAudioRecordSheet(),
+    );
+    if (capture != null && context.mounted) {
+      await onCaptureSaved(capture);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +104,9 @@ class LoomPage extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               connected && !loom.connecting
-                                  ? '${loom.sampleCount ?? 0} sample-bank entries on the instrument'
+                                  ? (loom.samplesLoaded
+                                        ? '${loom.sampleCount ?? 0} sample-bank entries on the instrument'
+                                        : 'Connected · sample bank not read')
                                   : loom.status,
                               style: const TextStyle(
                                 color: AppColors.muted,
@@ -172,6 +193,25 @@ class LoomPage extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 9),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: loom.transferring
+                            ? null
+                            : () => _recordUsbOutput(context),
+                        icon: const Icon(
+                          Icons.fiber_manual_record_rounded,
+                          size: 17,
+                        ),
+                        label: const Text('RECORD USB AUDIO'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.accent,
+                          side: const BorderSide(color: AppColors.line),
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                        ),
+                      ),
+                    ),
                   ],
                   if (loom.connecting || loom.transferring) ...[
                     const SizedBox(height: 18),
@@ -205,12 +245,39 @@ class LoomPage extends StatelessWidget {
               const SizedBox(height: 22),
               const SectionEyebrow('SAMPLES ON FM-1'),
               const SizedBox(height: 10),
-              if (loom.samples.isEmpty)
+              if (!loom.samplesLoaded)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const InfoStrip(
+                      icon: Icons.info_outline_rounded,
+                      text: 'The bank is not read on connect, so recording stays quick and does not fetch sample data. Read it only when you want to inspect or remove entries.',
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: loom.transferring
+                          ? null
+                          : () async {
+                              try {
+                                await loom.refreshSamples(force: true);
+                              } catch (_) {
+                                // The connection card shows the read error.
+                              }
+                            },
+                      icon: const Icon(Icons.download_rounded, size: 17),
+                      label: const Text('READ SAMPLE LIST'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.accent,
+                      ),
+                    ),
+                  ],
+                )
+              else if (loom.samples.isEmpty)
                 const InfoStrip(
                   icon: Icons.info_outline_rounded,
                   text: 'The FM-1 sample bank is empty.',
                 )
-              else
+              else ...[
                 for (final sample in loom.samples)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
@@ -221,6 +288,21 @@ class LoomPage extends StatelessWidget {
                           : () => _confirmRemoveSample(context, loom, sample),
                     ),
                   ),
+                TextButton.icon(
+                  onPressed: loom.transferring
+                      ? null
+                      : () async {
+                          try {
+                            await loom.refreshSamples(force: true);
+                          } catch (_) {
+                            // The connection card shows the read error.
+                          }
+                        },
+                  icon: const Icon(Icons.refresh_rounded, size: 16),
+                  label: const Text('Refresh sample list'),
+                  style: TextButton.styleFrom(foregroundColor: AppColors.muted),
+                ),
+              ],
             ],
             const SizedBox(height: 18),
             const InfoStrip(
